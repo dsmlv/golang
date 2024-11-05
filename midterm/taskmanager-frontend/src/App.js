@@ -107,7 +107,7 @@ const TaskList = () => {
       <div className="task-form">
         <form onSubmit={handleSubmit}>
           <div>
-            {/* Input for task title */}
+            {/* Input for task title (Dosmailova Dinara) */}
             <input
               className="form-control"
               type="text"
@@ -119,7 +119,7 @@ const TaskList = () => {
             />
           </div>
           <div>
-            {/* Textarea for task description */}
+            {/* Textarea for task description (Dosmailova Dinara) */}
             <textarea
               className="form-control mt-2"
               name="description"
@@ -152,12 +152,12 @@ const TaskList = () => {
                   checked={task.completed} // Mark as checked if task is completed
                   onChange={() => handleToggleComplete(task)} // Toggle completion on change
                 />
-                {/* Display task title, description, and completion status */}
+                {/* Display task title, description, and completion status (Dosmailova Dinara) */}
                 <span className="ms-2">
                   <strong>{task.title}</strong> - {task.description} -{" "}
                   <em>{task.completed ? "Completed" : "Pending"}</em> {/* Show if task is completed or pending */}
                 </span>
-                {/* Button to edit the task */}
+                {/* Button to edit the task ()Dosmailova Dinara */}
                 <button
                   onClick={() => handleEdit(task)}
                   className="btn btn-info btn-sm ms-2"

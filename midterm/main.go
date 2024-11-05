@@ -35,6 +35,7 @@ func initDB() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
+	//Dosmailova Dinara
 	// Automatically migrate the Task schema to create the tasks table
 	db.AutoMigrate(&Task{})
 }

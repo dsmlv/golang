@@ -1,0 +1,241 @@
+basePath: /
+definitions:
+  main.User:
+    properties:
+      age:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - age
+    - name
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: This API demonstrates CRUD operations using database/sql and GORM with
+    Swagger documentation.
+  title: Go REST API
+  version: "1.0"
+paths:
+  /user/gorm:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new user to the database using GORM
+      parameters:
+      - description: User to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.User'
+        "400":
+          description: Invalid request payload or validation error
+          schema:
+            type: string
+        "500":
+          description: Error inserting user
+          schema:
+            type: string
+      summary: Create a new user (GORM)
+      tags:
+      - Users
+  /user/gorm/{id}:
+    delete:
+      description: Deletes a user from the database using GORM
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No content
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+      summary: Delete a user (GORM)
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing user's information in the database using GORM
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.User'
+        "400":
+          description: Invalid request payload or validation error
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+      summary: Update a user (GORM)
+      tags:
+      - Users
+  /user/sql:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new user to the database using the database/sql package
+      parameters:
+      - description: User to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.User'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Error inserting user
+          schema:
+            type: string
+      summary: Create a new user
+      tags:
+      - Users
+  /user/sql/{id}:
+    delete:
+      description: Deletes a user from the database using the database/sql package
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No content
+          schema:
+            type: string
+        "400":
+          description: Invalid user ID
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Error deleting user
+          schema:
+            type: string
+      summary: Delete a user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing user's information in the database using the
+        database/sql package
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid user ID or request payload
+          schema:
+            type: string
+        "404":
+          description: User not found or no change in data
+          schema:
+            type: string
+        "500":
+          description: Error updating user
+          schema:
+            type: string
+      summary: Update a user
+      tags:
+      - Users
+  /users/gorm:
+    get:
+      description: Fetches a list of all users from the database using GORM
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.User'
+            type: array
+      summary: Retrieve all users (GORM)
+      tags:
+      - Users
+  /users/sql:
+    get:
+      description: Fetches a list of all users from the database using the database/sql
+        package
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.User'
+            type: array
+        "500":
+          description: Unable to query users
+          schema:
+            type: string
+      summary: Retrieve all users
+      tags:
+      - Users
+swagger: "2.0"
