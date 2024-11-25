@@ -116,7 +116,6 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 	hash.Write([]byte(user.Password))
 	user.Password = hex.EncodeToString(hash.Sum(nil))
 
-	// In a real application, save the user to the database
 	logger.Info("User registered: ", user.Username)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
