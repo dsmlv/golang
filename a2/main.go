@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	_ "exercise-two/docs" // Swagger docs
+	_ "exercise-two/docs"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -18,13 +18,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// Database variables
 var (
 	sqlDB    *sql.DB
 	gormDB   *gorm.DB
 	validate *validator.Validate
 )
 
+// Dinara Dosmailova
 // User model for GORM
 type User struct {
 	ID   uint   `json:"id" gorm:"primaryKey"`
@@ -38,16 +38,17 @@ type User struct {
 // @host localhost:8000
 // @BasePath /
 func main() {
-	// Initialize database connections
 	initSQLDB()
 	initGORMDB()
 
+	// Dinara Dosmailova
 	// Initialize validator
 	validate = validator.New()
 
 	// Setup router
 	r := mux.NewRouter()
 
+	// Dinara Dosmailova
 	// Define API routes
 	r.HandleFunc("/users/sql", getUsersSQL).Methods("GET")
 	r.HandleFunc("/user/sql", createUserSQL).Methods("POST")
@@ -59,14 +60,17 @@ func main() {
 	r.HandleFunc("/user/gorm/{id}", updateUserGORM).Methods("PUT")
 	r.HandleFunc("/user/gorm/{id}", deleteUserGORM).Methods("DELETE")
 
+	// Dinara Dosmailova
 	// Swagger documentation endpoint
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
+	// Dinara Dosmailova
 	// Start the server
 	fmt.Println("Server running on port 8000")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
 
+// Dinara Dosmailova
 // Initialize database connection using database/sql
 func initSQLDB() {
 	var err error
@@ -81,6 +85,7 @@ func initSQLDB() {
 	fmt.Println("Connected to database using database/sql")
 }
 
+// Dinara Dosmailova
 // Initialize database connection using GORM
 func initGORMDB() {
 	var err error
@@ -89,6 +94,7 @@ func initGORMDB() {
 	if err != nil {
 		log.Fatalf("Unable to connect to database using GORM: %v", err)
 	}
+	// Dinara Dosmailova
 	gormDB.AutoMigrate(&User{})
 	fmt.Println("Connected to database using GORM and AutoMigrate successful")
 }
@@ -106,6 +112,7 @@ func getUsersSQL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to query users", http.StatusInternalServerError)
 		return
 	}
+	// Dinara Dosmailova
 	defer rows.Close()
 
 	var users []User
@@ -117,6 +124,7 @@ func getUsersSQL(w http.ResponseWriter, r *http.Request) {
 		}
 		users = append(users, user)
 	}
+	// Dinara Dosmailova
 	json.NewEncoder(w).Encode(users)
 }
 
@@ -135,7 +143,7 @@ func createUserSQL(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
-	}
+	} // Dinara Dosmailova
 	if user.Name == "" || user.Age <= 0 {
 		http.Error(w, "Name and age are required", http.StatusBadRequest)
 		return
@@ -145,7 +153,7 @@ func createUserSQL(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error inserting user", http.StatusInternalServerError)
 		return
-	}
+	} // Dinara Dosmailova
 	json.NewEncoder(w).Encode(user)
 }
 
@@ -167,7 +175,7 @@ func updateUserSQL(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
-	}
+	} // Dinara Dosmailova
 	var user User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
@@ -178,7 +186,7 @@ func updateUserSQL(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error updating user", http.StatusInternalServerError)
 		return
-	}
+	} // Dinara Dosmailova
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
 		http.Error(w, "User not found or no change in data", http.StatusNotFound)
@@ -204,13 +212,15 @@ func deleteUserSQL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	query := "DELETE FROM users WHERE id = $1"
-	// Выполнение query запроса
+	// Dinara Dosmailova
+	// Implementation of query responce
 	result, err := sqlDB.Exec(query, id)
 	if err != nil {
 		http.Error(w, "Error deleting user", http.StatusInternalServerError)
 		return
 	}
-	//  ПРОВЕРКА УДАЛОСЬ ЛИ УДАЛИТЬ ПОЛЬЗОВАТЕЛЯ
+	// Dinara Dosmailova
+	//  Checks whether the user is deleted
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
 		http.Error(w, "User not found", http.StatusNotFound)
@@ -229,6 +239,7 @@ func getUsersGORM(w http.ResponseWriter, r *http.Request) {
 	var users []User
 	gormDB.Find(&users)
 	json.NewEncoder(w).Encode(users)
+	// Dinara Dosmailova
 }
 
 // @Summary Create a new user (GORM)
@@ -247,15 +258,18 @@ func createUserGORM(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
+	// Dinara Dosmailova
 	if err := validate.Struct(&user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	// Dinara Dosmailova
 	result := gormDB.Create(&user)
 	if result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
+	// Dinara Dosmailova
 	json.NewEncoder(w).Encode(user)
 }
 
@@ -274,6 +288,7 @@ func updateUserGORM(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	var user User
+	// Dinara Dosmailova
 	if gormDB.First(&user, id).Error != nil {
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
@@ -282,6 +297,7 @@ func updateUserGORM(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
+	// Dinara Dosmailova
 	if err := validate.Struct(&user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -301,6 +317,7 @@ func deleteUserGORM(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	var user User
+	// Dinara Dosmailova
 	if gormDB.First(&user, id).Error != nil {
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
