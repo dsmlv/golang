@@ -33,6 +33,13 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	// Fetch RoleID from the Role table
+	var role models.Role
+	if err := config.DB.Where("role_name = ?", input.Role).First(&role).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Role not found"})
+		return
+	}
+
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -45,7 +52,7 @@ func Register(c *gin.Context) {
 		Username:     input.Username,
 		Email:        input.Email,
 		PasswordHash: string(hashedPassword),
-		Role:         input.Role,
+		RoleID:       role.RoleID,
 		CreatedAt:    time.Now(),
 	}
 
@@ -70,8 +77,9 @@ func Login(c *gin.Context) {
 	}
 
 	// Find the user by email
+	// Fetch the user with the associated role
 	var user models.User
-	if err := config.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
+	if err := config.DB.Preload("Role").Where("email = ?", input.Email).First(&user).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
@@ -83,7 +91,7 @@ func Login(c *gin.Context) {
 	}
 
 	// Generate JWT token
-	token, err := utils.GenerateJWT(user.UserID.String(), user.Role)
+	token, err := utils.GenerateJWT(user.UserID.String(), user.Role.RoleName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
